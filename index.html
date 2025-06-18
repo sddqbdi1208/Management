@@ -1,193 +1,403 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Money Management</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f9fafb;
-      color: #333;
-      max-width: 700px;
-      margin: auto;
-      padding: 30px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Money Management</title>
+<!-- Google Material Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+<style>
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    color: #111827;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 16px;
+  }
+  header {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 16px 0;
+    background: linear-gradient(90deg, #059669, #10b981);
+    color: #ffffff;
+    border-radius: 12px;
+    user-select: none;
+    margin-bottom: 24px;
+  }
+  .total-balance {
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 32px;
+    color: #059669;
+  }
+  form {
+    max-width: 480px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 24px 32px;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+  }
+  input[type="date"],
+  input[type="number"],
+  input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 24px;
+    border: 1.8px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline-offset: 2px;
+    transition: border-color 0.25s ease;
+  }
+  input[type="date"]:focus,
+  input[type="number"]:focus,
+  input[type="text"]:focus {
+    border-color: #059669;
+  }
+  /* Expense inputs container - flex horizontal for two inputs */
+  .expense-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .expense-row > div {
+    flex-grow: 1;
+  }
+  /* Add expense button box */
+  .add-expense-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 32px auto;
+    background: #10b981;
+    border-radius: 12px;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.5);
+    transition: background-color 0.25s ease;
+  }
+  .add-expense-btn:hover {
+    background: #059669;
+    box-shadow: 0 6px 16px rgba(5,150,105,0.7);
+  }
+  button[type="submit"] {
+    width: 100%;
+    background: #059669;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    padding: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button[type="submit"]:hover {
+    background: #047857;
+  }
+  /* Responsive */
+  @media (max-width: 500px) {
+    form {
+      padding: 20px 16px;
     }
-
-    h1 {
-      text-align: center;
-      font-size: 2.2rem;
-      color: #1e40af;
+    .expense-row {
+      flex-direction: column;
     }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 1.5rem;
-      color: #047857;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="date"] {
+    .expense-row > div {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      background: #fff;
     }
-
-    button {
-      background-color: #1d4ed8;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+    .add-expense-btn {
+      width: 100%;
+      height: 50px;
+      font-size: 28px;
+      margin-bottom: 24px;
     }
-
-    button:hover {
-      background-color: #2563eb;
-    }
-
-    #pengeluaranContainer .pengeluaran-item {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    #status {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    .success {
-      color: #16a34a;
-    }
-
-    .error {
-      color: #dc2626;
-    }
-  </style>
+  }
+  /* Transactions list */
+  .transactions-list {
+    max-width: 480px;
+    margin: 32px auto 0 auto;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 32px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  .transactions-list h2 {
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+    color: #059669;
+  }
+  .transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.95rem;
+  }
+  .transaction-item:last-child {
+    border-bottom: none;
+  }
+  .transaction-type-income {
+    color: #059669;
+  }
+  .transaction-type-expense {
+    color: #dc2626;
+  }
+  .transaction-date {
+    color: #6b7280;
+    font-size: 0.85rem;
+  }
+</style>
 </head>
 <body>
-  <h1>Money Management</h1>
-  <h2>Saldo Saat Ini: <span id="saldo">Memuat...</span></h2>
+<header>Money Management</header>
+<div class="total-balance" aria-live="polite" aria-atomic="true" aria-label="Total saldo saat ini">Total Saldo: Rp0</div>
 
-  <form id="moneyForm">
-    <div class="form-group">
-      <label for="tanggal">Tanggal:</label>
-      <input type="date" id="tanggal" name="tanggal" required>
+<form aria-label="Form input pemasukan dan pengeluaran" id="moneyForm">
+  <label for="dateInput">Tanggal</label>
+  <input type="date" id="dateInput" name="date" required aria-required="true" />
+  
+  <label for="incomeInput">Nominal Pemasukan (Rp)</label>
+  <input type="number" id="incomeInput" name="income" min="0" step="1000" placeholder="0" required aria-required="true" />
+  
+  <div id="expensesContainer" aria-live="polite" aria-atomic="true" aria-label="Input pengeluaran">
+    <div class="expense-row">
+      <div>
+        <label for="expenseName0">Nama Barang Pengeluaran</label>
+        <input type="text" id="expenseName0" name="expenseNames[]" placeholder="Nama barang" required aria-required="true" />
+      </div>
+      <div>
+        <label for="expenseNominal0">Nominal Pengeluaran (Rp)</label>
+        <input type="number" id="expenseNominal0" name="expenseNominals[]" min="0" step="1000" placeholder="0" required aria-required="true" />
+      </div>
     </div>
+  </div>
+  
+  <div class="add-expense-btn" id="addExpenseBtn" role="button" tabindex="0" aria-label="Tambah pengeluaran lainnya" title="Tambah pengeluaran lainnya">+</div>
+  
+  <button type="submit">Simpan Transaksi</button>
+</form>
 
-    <div class="form-group">
-      <label for="pemasukan">Pemasukan:</label>
-      <input type="number" id="pemasukan" name="pemasukan" min="0" value="0" required>
-    </div>
+<div class="transactions-list" aria-live="polite" aria-atomic="true" aria-label="Daftar transaksi terbaru">
+  <h2>Transaksi Terbaru</h2>
+  <div id="transactionsList">Loading...</div>
+</div>
 
-    <div class="form-group">
-      <label>Pengeluaran:</label>
-      <div id="pengeluaranContainer"></div>
-      <button type="button" onclick="tambahPengeluaran()">+ Tambah Pengeluaran</button>
-    </div>
+<script>
+  const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwQdpJ8ZrF28tekNmtjfSYZECjxuOLgk2j_6WSC2IoPmEMl15eQADF9Ch3_59Oar3V6/exec';
+  const API_GET_TRANSACTIONS_URL = API_BASE_URL + '?action=getTransactions';
+  const API_ADD_TRANSACTION_URL = API_BASE_URL + '?action=addTransaction';
 
-    <button type="submit">Simpan</button>
-  </form>
+  // Utility: Format number as Indonesian Rupiah currency string
+  function formatRupiah(angka){
+    return 'Rp' + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
 
-  <p id="status"></p>
+  // Expense inputs dynamic add
+  const addExpenseBtn = document.getElementById('addExpenseBtn');
+  const expensesContainer = document.getElementById('expensesContainer');
+  let expenseCount = 1; // initial one expense row present
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxlEpAlKWZrChbvgEg-4N1vfEmp8LrgvavzR0c2Gd1M4GuSWhNXHprPWJrSCWmJj1-/exec";
-    const SPREADSHEET_ID = "1j_FbP-RHKTwvwkiHvPAp1LIu0lCgN5Ut_NqEmtsEcCQ";
+  addExpenseBtn.addEventListener('click', () => {
+    const expenseRow = document.createElement('div');
+    expenseRow.className = 'expense-row';
 
-    async function ambilSaldo() {
-      try {
-        const csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=0`;
-        const res = await fetch(csvUrl);
-        const text = await res.text();
-        const rows = text.split("\n").slice(1);
-        let saldo = 0;
+    // Name input container
+    const nameDiv = document.createElement('div');
+    const nameLabel = document.createElement('label');
+    nameLabel.setAttribute('for', 'expenseName' + expenseCount);
+    nameLabel.textContent = 'Nama Barang Pengeluaran';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.id = 'expenseName' + expenseCount;
+    nameInput.name = 'expenseNames[]';
+    nameInput.placeholder = 'Nama barang';
+    nameInput.required = true;
+    nameInput.setAttribute('aria-required', 'true');
+    nameDiv.appendChild(nameLabel);
+    nameDiv.appendChild(nameInput);
 
-        rows.forEach(row => {
-          const cols = row.split(",");
-          const jenis = cols[2]?.trim();
-          const nominal = parseFloat(cols[4]) || 0;
-          if (jenis === "Pemasukan") saldo += nominal;
-          if (jenis === "Pengeluaran") saldo -= nominal;
-        });
+    // Nominal input container
+    const nominalDiv = document.createElement('div');
+    const nominalLabel = document.createElement('label');
+    nominalLabel.setAttribute('for', 'expenseNominal' + expenseCount);
+    nominalLabel.textContent = 'Nominal Pengeluaran (Rp)';
+    const nominalInput = document.createElement('input');
+    nominalInput.type = 'number';
+    nominalInput.id = 'expenseNominal' + expenseCount;
+    nominalInput.name = 'expenseNominals[]';
+    nominalInput.min = '0';
+    nominalInput.step = '1000';
+    nominalInput.placeholder = '0';
+    nominalInput.required = true;
+    nominalInput.setAttribute('aria-required', 'true');
+    nominalDiv.appendChild(nominalLabel);
+    nominalDiv.appendChild(nominalInput);
 
-        document.getElementById("saldo").textContent = "Rp " + saldo.toLocaleString("id-ID");
-      } catch {
-        document.getElementById("saldo").textContent = "Gagal memuat saldo";
-      }
-    }
+    expenseRow.appendChild(nameDiv);
+    expenseRow.appendChild(nominalDiv);
 
-    ambilSaldo();
+    expensesContainer.appendChild(expenseRow);
 
-    function tambahPengeluaran() {
-      const container = document.getElementById("pengeluaranContainer");
-      const div = document.createElement("div");
-      div.className = "pengeluaran-item";
-      div.innerHTML = `
-        <input type="text" placeholder="Nama Barang" required>
-        <input type="number" placeholder="Nominal" required>
-      `;
-      container.appendChild(div);
-    }
+    expenseCount++;
+  });
 
-    document.getElementById("moneyForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+  // Fetch existing transactions from backend and render transactions + calculate total balance
+  async function loadTransactions() {
+    const transactionsList = document.getElementById('transactionsList');
+    const totalBalanceDiv = document.querySelector('.total-balance');
+    transactionsList.textContent = 'Loading...';
 
-      const tanggal = e.target.tanggal.value;
-      const pemasukan = e.target.pemasukan.value;
+    try {
+      const response = await fetch(API_GET_TRANSACTIONS_URL);
+      if (!response.ok) throw new Error('Fetch error ' + response.status);
+      const data = await response.json(); // Assumed to return an array of transactions
 
-      const pengeluaranEls = document.querySelectorAll("#pengeluaranContainer .pengeluaran-item");
-      const pengeluaran = Array.from(pengeluaranEls).map(row => {
-        const inputs = row.querySelectorAll("input");
-        return {
-          nama: inputs[0].value,
-          nominal: inputs[1].value
-        };
-      }).filter(p => p.nama && p.nominal > 0);
+      if (!Array.isArray(data)) throw new Error('Invalid data format');
 
-      const payload = { tanggal, pemasukan, pengeluaran };
+      let totalIncome = 0;
+      let totalExpense = 0;
 
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+      // Clear current list
+      transactionsList.innerHTML = '';
 
-        const json = await res.json();
-        if (json.status === "success") {
-          document.getElementById("status").textContent = "✅ Data berhasil disimpan!";
-          document.getElementById("status").className = "success";
-          e.target.reset();
-          document.getElementById("pengeluaranContainer").innerHTML = "";
-          ambilSaldo();
+      data.forEach(tx => {
+        // transaction object assumed {date, type, amount, description}
+        const item = document.createElement('div');
+        item.className = 'transaction-item';
+
+        const descElm = document.createElement('div');
+        descElm.textContent = tx.description || (tx.type === 'income' ? 'Pemasukan' : 'Pengeluaran');
+
+        const amountElm = document.createElement('div');
+        amountElm.textContent = formatRupiah(tx.amount);
+        amountElm.className = tx.type === 'income' ? 'transaction-type-income' : 'transaction-type-expense';
+
+        const dateElm = document.createElement('div');
+        dateElm.textContent = new Date(tx.date).toLocaleDateString('id-ID');
+        dateElm.className = 'transaction-date';
+
+        item.appendChild(descElm);
+        item.appendChild(amountElm);
+        item.appendChild(dateElm);
+
+        transactionsList.appendChild(item);
+
+        if (tx.type === 'income') {
+          totalIncome += tx.amount;
         } else {
-          throw new Error(json.message || "Gagal menyimpan");
+          totalExpense += tx.amount;
         }
-      } catch (err) {
-        document.getElementById("status").textContent = "❌ Gagal menyimpan data!";
-        document.getElementById("status").className = "error";
+      });
+
+      const netBalance = totalIncome - totalExpense;
+      totalBalanceDiv.textContent = `Total Saldo: ${formatRupiah(netBalance)}`;
+    } catch (error) {
+      transactionsList.textContent = 'Gagal memuat data transaksi.';
+      console.error(error);
+    }
+  }
+
+  // Submit new transaction(s) to backend
+  document.getElementById('moneyForm').addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const date = document.getElementById('dateInput').value;
+    const income = parseFloat(document.getElementById('incomeInput').value) || 0;
+
+    // Gather expenses input pairs
+    const expenseNames = [...document.querySelectorAll('input[name="expenseNames[]"]')].map(el => el.value.trim());
+    const expenseNominals = [...document.querySelectorAll('input[name="expenseNominals[]"]')].map(el => parseFloat(el.value) || 0);
+
+    // Validate that all expense names and nominals are filled and valid
+    for (let i = 0; i < expenseNames.length; i++) {
+      if (!expenseNames[i]) {
+        alert(`Nama barang pengeluaran ke-${i+1} belum diisi.`);
+        return;
       }
-    });
-  </script>
+      if (expenseNominals[i] <= 0) {
+        alert(`Nominal pengeluaran ke-${i+1} harus lebih dari 0.`);
+        return;
+      }
+    }
+
+    // Prepare transactions array to send: one income transaction plus multiple expenses
+    const transactionsToAdd = [];
+
+    if(income > 0){
+      transactionsToAdd.push({
+        date,
+        type: 'income',
+        amount: income,
+        description: 'Pemasukan'
+      });
+    }
+
+    for(let i = 0; i < expenseNames.length; i++){
+      transactionsToAdd.push({
+        date,
+        type: 'expense',
+        amount: expenseNominals[i],
+        description: expenseNames[i]
+      });
+    }
+
+    try {
+      const response = await fetch(API_ADD_TRANSACTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactions: transactionsToAdd })
+      });
+
+      if(!response.ok) throw new Error(`Response status: ${response.status}`);
+
+      const result = await response.json();
+
+      if(result.success) {
+        alert('Transaksi berhasil disimpan.');
+        e.target.reset();
+        // Remove dynamically added expense inputs except the first one
+        const expenseRows = expensesContainer.querySelectorAll('.expense-row');
+        expenseRows.forEach((row, idx) => {
+          if(idx > 0) row.remove();
+        });
+        expenseCount = 1;
+
+        loadTransactions();
+      } else {
+        alert('Gagal menyimpan transaksi. Silakan coba lagi.');
+      }
+    } catch (error) {
+      alert('Terjadi kesalahan saat menyimpan transaksi.');
+      console.error(error);
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    loadTransactions();
+  });
+</script>
 </body>
 </html>
+
