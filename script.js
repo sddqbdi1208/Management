@@ -2,7 +2,7 @@ const url = 'https://script.google.com/macros/s/AKfycbwHX4qMrR53Ee0IrSQ4MlHpH_Vh
 
 window.onload = async () => {
   await ambilData();
-  tambahPengeluaran(); // minimal 1 pengeluaran
+  tambahPengeluaran(); // tampilkan 1 baris default
 };
 
 function tambahPengeluaran() {
@@ -26,27 +26,43 @@ async function simpanData() {
     const nama = namaList[i].value.trim();
     const nominal = Number(nominalList[i].value);
     if (nama && nominal) {
-      pengeluaran.push({ nama, nominal });
+      pengeluaran.push(`${nama}: Rp ${nominal.toLocaleString("id-ID")}`);
     }
   }
 
-  const data = { tanggal, pemasukan, pengeluaran };
+  const data = {
+    tanggal,
+    pemasukan,
+    pengeluaran: pengeluaran.join(", ")
+  };
 
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(data)
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(data).toString()
     });
-    const hasil = await response.text();
 
-const responBox = document.getElementById("respon");
-if (hasil.toLowerCase().includes("success")) {
-  responBox.textContent = "✅ Data berhasil disimpan!";
-  responBox.style.color = "green";
-} else {
-  responBox.textContent = "❌ Gagal menyimpan data!";
-  responBox.style.color = "red";
+    const hasil = await response.text();
+    tampilkanNotif(hasil.toLowerCase().includes("success"));
+    await ambilData(); // refresh saldo
+  } catch (err) {
+    tampilkanNotif(false);
+  }
+}
+
+function tampilkanNotif(sukses) {
+  const notif = document.getElementById("notif");
+  notif.style.display = "block";
+  if (sukses) {
+    notif.textContent = "✅ Data berhasil disimpan ke Google Sheet.";
+    notif.style.backgroundColor = "#d4edda";
+    notif.style.color = "#155724";
+  } else {
+    notif.textContent = "❌ Gagal menyimpan data.";
+    notif.style.backgroundColor = "#f8d7da";
+    notif.style.color = "#721c24";
+  }
 }
 
 async function ambilData() {
@@ -57,7 +73,9 @@ async function ambilData() {
     let total = 0;
     data.forEach(row => {
       total += Number(row.pemasukan);
-      row.pengeluaran.forEach(p => total -= p.nominal);
+      const pengeluaranText = row.pengeluaran || "";
+      const jumlahUang = pengeluaranText.match(/\d+/g) || [];
+      jumlahUang.forEach(n => total -= Number(n));
     });
 
     document.getElementById("saldo").textContent = "Rp " + total.toLocaleString("id-ID");
