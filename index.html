@@ -1,42 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Test Google Script</title>
-</head>
-<body>
-  <h2>Test Kirim Data ke Google Sheet</h2>
-  <button onclick="kirimData()">Kirim Data Uji</button>
+async function kirimData() {
+  const url = 'https://script.google.com/macros/s/AKfycbwHX4qMrR53Ee0IrSQ4MlHpH_VhdRjR88sMYN4yvjxs83_1ONdTd4y0EGA8UiXnB0xI/exec';
 
-  <pre id="respon"></pre>
+  const data = {
+    tanggal: "2025-06-21",
+    pemasukan: 500000,
+    pengeluaran: [
+      { nama: "Makan", nominal: 25000 },
+      { nama: "Parkir", nominal: 5000 }
+    ]
+  };
 
-  <script>
-    async function kirimData() {
-      const url = 'https://script.google.com/macros/s/AKfycbwHX4qMrR53Ee0IrSQ4MlHpH_VhdRjR88sMYN4yvjxs83_1ONdTd4y0EGA8UiXnB0xI/exec';
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        // GUNAKAN text/plain untuk hindari preflight
+        'Content-Type': 'text/plain'
+      },
+      body: JSON.stringify(data)
+    });
 
-      const data = {
-        tanggal: "2025-06-21",
-        pemasukan: 500000,
-        pengeluaran: [
-          { nama: "Makan", nominal: 25000 },
-          { nama: "Parkir", nominal: 5000 }
-        ]
-      };
-
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        });
-
-        const hasil = await response.json();
-        document.getElementById("respon").textContent = JSON.stringify(hasil, null, 2);
-      } catch (err) {
-        document.getElementById("respon").textContent = "Gagal: " + err;
-      }
-    }
-  </script>
-</body>
-</html>
+    const hasil = await response.json();
+    document.getElementById("respon").textContent = JSON.stringify(hasil, null, 2);
+  } catch (err) {
+    document.getElementById("respon").textContent = "Gagal: " + err;
+  }
+}
