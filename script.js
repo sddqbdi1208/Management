@@ -39,12 +39,14 @@ async function simpanData() {
       body: JSON.stringify(data)
     });
     const hasil = await response.text();
-    document.getElementById("respon").textContent = hasil;
 
-    await ambilData(); // refresh saldo
-  } catch (err) {
-    document.getElementById("respon").textContent = "Gagal simpan: " + err;
-  }
+const responBox = document.getElementById("respon");
+if (hasil.toLowerCase().includes("success")) {
+  responBox.textContent = "✅ Data berhasil disimpan!";
+  responBox.style.color = "green";
+} else {
+  responBox.textContent = "❌ Gagal menyimpan data!";
+  responBox.style.color = "red";
 }
 
 async function ambilData() {
