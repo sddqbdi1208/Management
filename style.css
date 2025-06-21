@@ -57,3 +57,12 @@ button:hover {
   gap: 10px;
   margin-bottom: 0.5rem;
 }
+
+pre#respon {
+  background: #f0f0f0;
+  padding: 0.5rem;
+  border-left: 4px solid #4caf50;
+  font-weight: bold;
+  white-space: pre-wrap;
+  border-radius: 5px;
+}
