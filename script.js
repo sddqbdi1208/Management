@@ -73,13 +73,16 @@ async function ambilData() {
     let total = 0;
     data.forEach(row => {
       total += Number(row.pemasukan);
-      const pengeluaranText = row.pengeluaran || "";
-      const jumlahUang = pengeluaranText.match(/\d+/g) || [];
-      jumlahUang.forEach(n => total -= Number(n));
+
+      // Ekstrak angka dari pengeluaran teks (misal: "Makan: Rp 25000")
+      const matches = row.pengeluaran.match(/(\d[\d.]*)/g);
+      if (matches) {
+        matches.forEach(n => total -= Number(n.replace(/\./g, "").replace(",", "")));
+      }
     });
 
     document.getElementById("saldo").textContent = "Rp " + total.toLocaleString("id-ID");
   } catch (err) {
-    document.getElementById("saldo").textContent = "Gagal ambil saldo";
+    document.getElementById("saldo").textContent = "Gagal ambil saldo: " + err;
   }
 }
