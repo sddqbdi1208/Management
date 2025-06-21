@@ -74,10 +74,15 @@ async function ambilData() {
     data.forEach(row => {
       total += Number(row.pemasukan);
 
-      // Ekstrak angka dari pengeluaran teks (misal: "Makan: Rp 25000")
-      const matches = row.pengeluaran.match(/(\d[\d.]*)/g);
+      const teks = row.pengeluaran || "";
+
+      // Ambil semua angka dari pengeluaran seperti: "Makan: Rp 7.500"
+      const matches = teks.match(/Rp\s?([\d.,]+)/gi);
       if (matches) {
-        matches.forEach(n => total -= Number(n.replace(/\./g, "").replace(",", "")));
+        matches.forEach(match => {
+          const numStr = match.replace(/[^\d]/g, ""); // hapus Rp, titik, koma
+          total -= Number(numStr);
+        });
       }
     });
 
